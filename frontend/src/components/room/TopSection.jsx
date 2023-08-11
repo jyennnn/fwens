@@ -8,7 +8,7 @@ const TopSection = (props) => {
         onClick={props.toggleSidebar}>
             &#x2190;
           </button>
-        <img className="ai-avatar" src={IMAGES[props.currentBot + 'Avatar']} />
+        <img className="ai-avatar" src={IMAGES[props.currentBot + 'Avatar']} alt="ai avatar"/>
         <div className="ai-name">
             <h4>{props.currentBot}</h4>
             <h5 className="animate-status">{props.currentBotStatus}</h5>

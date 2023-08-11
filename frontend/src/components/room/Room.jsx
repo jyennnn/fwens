@@ -13,6 +13,7 @@ const Room = (props) => {
             mobileView={props.mobileView}
             toggleSound={props.toggleSound}
             sound={props.sound}/>
+            
         <BottomSection 
             previousChats={props.previousChats} 
             userMessage={props.userMessage} 

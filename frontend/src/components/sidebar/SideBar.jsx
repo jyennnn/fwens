@@ -15,6 +15,7 @@ const SideBar = (props) => {
     return ( 
       <>
         <Logo />
+
         <div className="switch">
           <ReactSwitch 
             onChange={props.toggleTheme} 
@@ -30,9 +31,11 @@ const SideBar = (props) => {
             onHandleColor="#6B8069"
             offHandleColor="#985c3e"/>
         </div>
+
         <SearchBar 
           searchQuery={searchQuery}
           searchChange={searchChange}/> 
+          
         <ChatRooms 
             listOfBots={props.listOfBots}
             previousChats={props.previousChats}

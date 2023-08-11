@@ -73,7 +73,7 @@ function App() {
   }
   
  
-  // 
+  // ------------- chatting functions ----------------------- //
   const changeUserMessage = (e) => {
     setUserMessage(e.target.value)
   }
@@ -86,6 +86,12 @@ function App() {
     }
   }
 
+  const currentChat = previousChats.filter(previousChat => previousChat.bot === currentBot)
+  const listOfBots = Array.from(new Set(previousChats.map(previousChat => previousChat.bot)))
+
+  // ------------- bot functions ----------------------- //
+
+  // -- choosing bot on home page --
   const chooseBot = (e) => {
     let bot = e.currentTarget.querySelector('span').textContent
     console.log("choosebot", e.currentTarget.querySelector('span').textContent)
@@ -114,6 +120,7 @@ function App() {
     }
   } 
 
+  // -- choosing bot on sidebar --
   const chooseBot2 = (e) => {
     if (mobileView === true && showSidebar === true) {
       setShowSidebar(false)
@@ -144,11 +151,25 @@ function App() {
     }
   } 
 
-const getMessages = async () => {
+  // ------------- API functions ----------------------- //
+
+  // ----- ChatGPT API -----
+  const getMessages = async () => {
+    // >> disable input & bot typing
     setUserMessage("")
     setIsInputDisabled(true)
     setCurrentBotStatus("typing...")
 
+    // >> create array of messages, save user message
+    let newUserMessage = {
+          bot: currentBot,
+          role: "user",
+          content: userMessage
+        }
+    setPreviousChats((prev) => [...prev, newUserMessage ])
+    
+
+    // >> data to send API
     const options = {
       method: "POST",
       body: JSON.stringify({
@@ -159,43 +180,40 @@ const getMessages = async () => {
       }
     }
 
-    let newUserMessage = {
-      bot: currentBot,
-      role: "user",
-      content: userMessage
-    }
-    setPreviousChats((prev) => [...prev, newUserMessage ])
-
+    // >> wait for API 
     try {
-        const response = await fetch('https://fwens-backend.onrender.com:10000/completions', options)
+        const response = await fetch('https://fwens-backend.onrender.com/completions', options)
         const data = await response.json()
 
+        // >> save computer message to array
         let newComputerMessage = {
           bot: currentBot,
           role: data.choices[0].message.role,
           content: data.choices[0].message.content
         }
         
-        if (sound === true) {
-          await getAudioMessages(data.choices[0].message.content)
-          setPreviousChats((prev) => [...prev, newComputerMessage ])
-          setIsInputDisabled(false)
-          setCurrentBotStatus("active now")
-        } 
-        else if ( sound === false ) {
-          setPreviousChats((prev) => [...prev, newComputerMessage ])
-          setIsInputDisabled(false)
-          setCurrentBotStatus("active now")
-        }
-        
+            // >> if sound is on, call Eleven Labs API 
+            if (sound === true) {
+              await getAudioMessages(data.choices[0].message.content)
+              setPreviousChats((prev) => [...prev, newComputerMessage ])
+              setIsInputDisabled(false)
+              setCurrentBotStatus("active now")
+            } 
+            else if ( sound === false ) {
+              setPreviousChats((prev) => [...prev, newComputerMessage ])
+              setIsInputDisabled(false)
+              setCurrentBotStatus("active now")
+            }
         
     } catch (error) {
         console.error(error)
     }
   }
 
+  // ----- Eleven Labs API -----
   const getAudioMessages = async (text) => {
 
+    // >> data to send API
     const options = {
       method: "POST",
       headers: {
@@ -207,8 +225,9 @@ const getMessages = async () => {
       }),
     }
 
+    // >> wait for API 
     try {
-      const response = await fetch('https://fwens-backend.onrender.com:10000/eleven-completions', options);
+      const response = await fetch('https://fwens-backend.onrender.com/eleven-completions', options);
   
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -224,54 +243,52 @@ const getMessages = async () => {
       }
   }
 
-  const currentChat = previousChats.filter(previousChat => previousChat.bot === currentBot)
-  const listOfBots = Array.from(new Set(previousChats.map(previousChat => previousChat.bot)))
-
   return (
     <ThemeContext.Provider value ={{theme, toggleTheme}}>
     <div className="body" id={theme}>
     <Router>
-    <div className="app" id={theme}>
-      <section className={`side-bar ${showSidebar ? '' : 'hide-sidebar'}`}>
-        <SideBar 
-            listOfBots={listOfBots}
-            previousChats={previousChats} 
-            chooseBot2={chooseBot2}
-            toggleSidebar={toggleSidebar}
-            mobileView={mobileView}
-            toggleTheme={toggleTheme}
-            theme={theme}
-        />
-      </section>
-        <section className={`main ${showSidebar ? 'hide-main' : ''}`}>
-        <Routes>
-        <Route path="/" 
-            element={<Home 
-                      chooseBot={chooseBot}
-                      listOfBots={listOfBots}/>} 
-          />
+      <div className="app" id={theme}>
+          <section className={`side-bar ${showSidebar ? '' : 'hide-sidebar'}`}>
+            <SideBar 
+                listOfBots={listOfBots}
+                previousChats={previousChats} 
+                chooseBot2={chooseBot2}
+                toggleSidebar={toggleSidebar}
+                mobileView={mobileView}
+                toggleTheme={toggleTheme}
+                theme={theme}
+            />
+          </section>
+          
+          <section className={`main ${showSidebar ? 'hide-main' : ''}`}>
+          <Routes>
+          <Route path="/" 
+              element={<Home 
+                        chooseBot={chooseBot}
+                        listOfBots={listOfBots}/>} 
+            />
 
-          <Route path="room" 
-            element={<Room 
-                      previousChats={previousChats} 
-                      userMessage={userMessage} 
-                      changeUserMessage={changeUserMessage}
-                      getMessages={getMessages}
-                      currentBot={currentBot}
-                      currentChat={currentChat}
-                      onKeyPress={onKeyPress}
-                      isInputDisabled={isInputDisabled}
-                      currentBotStatus={currentBotStatus}
-                      toggleSidebar={toggleSidebar}
-                      mobileView={mobileView}
-                      toggleSound={toggleSound}
-                      sound={sound}
-                      />}
-          />
+            <Route path="room" 
+              element={<Room 
+                        previousChats={previousChats} 
+                        userMessage={userMessage} 
+                        changeUserMessage={changeUserMessage}
+                        getMessages={getMessages}
+                        currentBot={currentBot}
+                        currentChat={currentChat}
+                        onKeyPress={onKeyPress}
+                        isInputDisabled={isInputDisabled}
+                        currentBotStatus={currentBotStatus}
+                        toggleSidebar={toggleSidebar}
+                        mobileView={mobileView}
+                        toggleSound={toggleSound}
+                        sound={sound}
+                        />}
+            />
 
-        </Routes>
-        </section>
-    </div>
+          </Routes>
+          </section>
+      </div>
     </Router>
     </div>
     </ThemeContext.Provider>
