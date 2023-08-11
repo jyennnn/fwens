@@ -1,6 +1,6 @@
 const PORT = 8000
 const express = require('express')
-// const cors = require('cors')
+const cors = require('cors')
 require('dotenv').config();
 
 // setup server
@@ -8,12 +8,13 @@ const app = express()
 
 // Middleware to parse JSON data from request body
 app.use(express.json())
+app.use(cors({ origin: 'https://fwens.vercel.app/' }));
 // app.use(cors())
-app.use((req, res, next)=> {
-    res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-})
+// app.use((req, res, next)=> {
+//     res.header('Access-Control-Allow-Origin', '*');
+//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+//   next();
+// })
 
 const GPT_API_KEY = process.env.REACT_APP_GPT_API_KEY
 const EL_API_KEY = process.env.REACT_APP_EL_API_KEY
