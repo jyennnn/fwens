@@ -1,4 +1,5 @@
 // const PORT = 8000
+const port = process.env.PORT || 8000
 const express = require('express')
 const cors = require('cors')
 require('dotenv').config();
@@ -78,3 +79,4 @@ app.post('/eleven-completions', async (req, res) => {
 
 // // run server
 // app.listen(PORT, () => console.log('Your server is running on PORT' + PORT))
+app.listen(port, () => console.log('Your server is running on PORT' + port))
