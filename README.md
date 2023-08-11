@@ -1,6 +1,7 @@
 # Fwens AI Chat App :hatched_chick:
-![The Pastel Jukebox Game](https://github.com/jyennnn/the-pastel-jukebox/blob/main/images/readme/ThePastelJukebox-StartMenu2.png?raw=true)
+![Fwens](https://github.com/jyennnn/fwens/blob/main/readme-img/fwens-app.png?raw=true)
 
+#### Try it out here - [fwens](https://fwens.vercel.app/)
 ---
 
 ## Description
