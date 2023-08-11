@@ -5,26 +5,33 @@ import Home from './components/home/Home';
 import { useState, useEffect } from "react";
 import { createContext } from 'react'; 
 
+// Create Theme Context 
 export const ThemeContext = createContext(null);
 
 function App() {
 
-  const [ userMessage, setUserMessage ] = useState("")
-  const [ previousChats, setPreviousChats ] = useState([])
+  // ------------- useStates --------------------- // 
+  
+  // -- bot personality -- 
   const [ currentBot, setCurrentBot ] = useState("")
   const [ botEmotions, setBotEmotions ] = useState("")
   const [ botVoice, setBotVoice ] = useState("")
-  const [ isInputDisabled, setIsInputDisabled] = useState(false)
   const [ currentBotStatus, setCurrentBotStatus] = useState("active now")
+
+  // -- chats -- 
+  const [ previousChats, setPreviousChats ] = useState([])
+  const [ userMessage, setUserMessage ] = useState("")
+  const [ isInputDisabled, setIsInputDisabled] = useState(false)
+  
+  // -- mobile view / interactivity --
   const [ mobileView, setMobileView ] = useState(false)
   const [ showSidebar, setShowSidebar] = useState(false)
   const [ sound, setSound] = useState(true)
   const [ theme, setTheme ] = useState("brown")
 
-  const toggleTheme = () => {
-    setTheme((curr) => (curr === "brown" ? "green" : "brown"))
-  }
-  
+
+  // ------------- useEffect --------------------- // 
+  // -- handle window resize -- 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth <= 780) {
@@ -44,6 +51,11 @@ function App() {
   },[]);
 
 
+  // ------------- toggle buttons ----------------------- //
+  const toggleTheme = () => {
+    setTheme((curr) => (curr === "brown" ? "green" : "brown"))
+  }
+
   const toggleSidebar = (e) => {
     if (mobileView === true && showSidebar === true) {
       setShowSidebar(false)
@@ -59,8 +71,9 @@ function App() {
       setSound(true)
     }
   }
-
-
+  
+ 
+  // 
   const changeUserMessage = (e) => {
     setUserMessage(e.target.value)
   }
@@ -154,7 +167,7 @@ const getMessages = async () => {
     setPreviousChats((prev) => [...prev, newUserMessage ])
 
     try {
-        const response = await fetch('https://fwens-backend.onrender.com/completions', options)
+        const response = await fetch('https://fwens-backend.onrender.com:10000/completions', options)
         const data = await response.json()
 
         let newComputerMessage = {
@@ -195,7 +208,7 @@ const getMessages = async () => {
     }
 
     try {
-      const response = await fetch('https://fwens-backend.onrender.com/eleven-completions', options);
+      const response = await fetch('https://fwens-backend.onrender.com:10000/eleven-completions', options);
   
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
