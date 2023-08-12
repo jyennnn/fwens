@@ -63,10 +63,14 @@ Developer must be able to:
 
 Recently, many AI models like text-to-speech, text-to-image, image-to-video, generative AI and more has been gaining popularity. 
 </br>The models can produce very realistic and surprising results. Hence, I have been very interested in it lately. 
-</br>
+
 
 ### Problem-Solving Strategy
-
+As everything is new to me, I would do a tutorial on a similar subject first. 
+After I learnt it, I am able to use the main ideas to implement into my App. 
+I realised it's important to take a step back to make sure you understand what you need to do. 
+So patience is virtue. 
+Understanding how to troubleshoot also helps. 
 
 
 ### Unsolved problems
@@ -74,7 +78,8 @@ Recently, many AI models like text-to-speech, text-to-image, image-to-video, gen
 > - On mobile, the app does not fit the screen exactly.
 > - Code can be refactored and cleaned up. 
 > - After bots are chosen, we need to disable the div container.
-> - Add more personalities and voices. 
+> - Add more personalities and voices.
+> - Add a user log in function
 
 ---
 
