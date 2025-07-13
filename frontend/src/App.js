@@ -29,8 +29,6 @@ function App() {
   const [ sound, setSound] = useState(true)
   const [ theme, setTheme ] = useState("brown")
 
-  console.log('sound', sound)
-
 
   // ------------- useEffect --------------------- // 
   // -- handle window resize -- 
@@ -218,6 +216,8 @@ function App() {
 
   // ----- Eleven Labs API -----
   const getAudioMessages = async (text) => {
+    console.log("🧠 Sending text to Eleven Labs:", text);
+  console.log("🔊 Using voice ID:", botVoice);
 
     // >> data to send API
     const options = {
@@ -247,8 +247,12 @@ function App() {
       console.warn("⚠️ No base64Data found in response!");
       return;
     }
+
+    console.log("📥 Received base64 audio data (length):", responseData.base64Data.length);
+
       const audio = new Audio();
       audio.src = 'data:audio/mpeg;base64,' + responseData.base64Data; // Set the audio source with Base64 data
+      console.log("🎧 Attempting to play audio with src:", audio.src.slice(0, 50) + "...");
       audio.play();
 
       } catch (error) {
