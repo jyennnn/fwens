@@ -5,6 +5,14 @@
 const port = process.env.PORT || 8000
 const express = require('express')
 const cors = require('cors')
+const fetch = require("node-fetch");
+const { Headers, Request, Response } = fetch;
+
+globalThis.fetch = fetch;
+globalThis.Headers = Headers;
+globalThis.Request = Request;
+globalThis.Response = Response;
+
 require('dotenv').config();
 
 const OpenAI = require("openai");
