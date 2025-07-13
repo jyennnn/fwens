@@ -94,7 +94,6 @@ function App() {
   // -- choosing bot on home page --
   const chooseBot = (e) => {
     let bot = e.currentTarget.querySelector('span').textContent
-    console.log("choosebot", e.currentTarget.querySelector('span').textContent)
     setCurrentBot(bot)
     
     if (bot === "kayla") {
@@ -216,8 +215,6 @@ function App() {
 
   // ----- Eleven Labs API -----
   const getAudioMessages = async (text) => {
-    console.log("🧠 Sending text to Eleven Labs:", text);
-  console.log("🔊 Using voice ID:", botVoice);
 
     // >> data to send API
     const options = {
@@ -248,11 +245,9 @@ function App() {
       return;
     }
 
-    console.log("📥 Received base64 audio data (length):", responseData.base64Data.length);
 
       const audio = new Audio();
       audio.src = 'data:audio/mpeg;base64,' + responseData.base64Data; // Set the audio source with Base64 data
-      console.log("🎧 Attempting to play audio with src:", audio.src.slice(0, 50) + "...");
       audio.play();
 
       } catch (error) {
