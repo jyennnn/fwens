@@ -5,7 +5,6 @@
 const port = process.env.PORT || 8000
 const express = require('express')
 const cors = require('cors')
-const fetch = require('node-fetch');
 require('dotenv').config();
 
 const OpenAI = require("openai");
@@ -21,7 +20,6 @@ app.use(cors())
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-  fetch: fetch 
 });
 
 const clientEl = new ElevenLabsClient({
@@ -30,6 +28,7 @@ const clientEl = new ElevenLabsClient({
 
 app.post('/completions', async (req, res) => {
   const userMessage = req.body.message;
+  console.log("💬 Received GPT message:", userMessage);
 
   try {
     const completion = await client.chat.completions.create({
@@ -40,6 +39,9 @@ app.post('/completions', async (req, res) => {
       max_tokens: 100,
       temperature: 0.7
     });
+
+    const gptReply = completion.choices?.[0]?.message?.content;
+    console.log("🤖 GPT Response:", gptReply);
 
     res.json({
         choices: [
@@ -61,6 +63,8 @@ app.post('/completions', async (req, res) => {
 
 app.post('/eleven-completions', async (req, res) => {
   const { text, botVoice } = req.body;
+  console.log("📤 Text for TTS:", text);
+  console.log("🗣️ Voice ID:", botVoice);
 
   try {
     const stream = await clientEl.textToSpeech.convert(botVoice, {
@@ -81,6 +85,8 @@ app.post('/eleven-completions', async (req, res) => {
 
     const audioBuffer = Buffer.concat(chunks);
     const base64Data = audioBuffer.toString("base64");
+
+     console.log("✅ Audio generated. Length:", base64Data.length);
 
     res.json({ base64Data });
 
