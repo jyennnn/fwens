@@ -20,11 +20,12 @@ app.use(cors())
 
 
 const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+  apiKey: process.env.OPENAI_API_KEY,
+  fetch: fetch 
 });
 
 const clientEl = new ElevenLabsClient({
-  apiKey: process.env.REACT_APP_EL_API_KEY
+  apiKey: process.env.EL_API_KEY
 });
 
 app.post('/completions', async (req, res) => {
