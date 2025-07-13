@@ -29,6 +29,8 @@ function App() {
   const [ sound, setSound] = useState(true)
   const [ theme, setTheme ] = useState("brown")
 
+  console.log('sound', sound)
+
 
   // ------------- useEffect --------------------- // 
   // -- handle window resize -- 
@@ -99,19 +101,19 @@ function App() {
     
     if (bot === "kayla") {
       setBotEmotions("sarcastic reply");
-      setBotVoice("jsCqWAovK2LkecY7zXl4") 
+      setBotVoice("21m00Tcm4TlvDq8ikWAM") 
 
     } else if (bot === "tyler") {
       setBotEmotions("simple sad reply");
-      setBotVoice("GBv7mTt0atIp3Br8iCZE")
+      setBotVoice("29vD33N1CtxCmqQRPOHJ")
 
     } else if (bot === "sammy") {
       setBotEmotions("comforting reply");
-      setBotVoice("XrExE9yKIg1WjnnlVkGX")
+      setBotVoice("5Q0t7uMcjvnagumLfvZi")
 
     } else if (bot === "charlie") {
       setBotEmotions("reply like a genius");
-      setBotVoice("ThT5KcBeYPX3keUQqHPh")
+      setBotVoice("EXAVITQu4vr4xnSDxMaL")
 
        
     } else if (bot === "girishi") {
@@ -131,19 +133,19 @@ function App() {
     
     if (bot === "kayla") {
       setBotEmotions("sarcastic reply");
-      setBotVoice("jsCqWAovK2LkecY7zXl4") 
+      setBotVoice("21m00Tcm4TlvDq8ikWAM") 
 
     } else if (bot === "tyler") {
       setBotEmotions("simple sad reply");
-      setBotVoice("GBv7mTt0atIp3Br8iCZE")
+      setBotVoice("29vD33N1CtxCmqQRPOHJ")
 
     } else if (bot === "sammy") {
       setBotEmotions("comforting reply");
-      setBotVoice("XrExE9yKIg1WjnnlVkGX")
+      setBotVoice("5Q0t7uMcjvnagumLfvZi")
 
     } else if (bot === "charlie") {
       setBotEmotions("reply like a genius");
-      setBotVoice("ThT5KcBeYPX3keUQqHPh")
+      setBotVoice("EXAVITQu4vr4xnSDxMaL")
 
     } else if (bot === "girishi") {
       setBotEmotions("flirty reply");
@@ -180,10 +182,14 @@ function App() {
       }
     }
 
+
     // >> wait for API 
     try {
-        const response = await fetch('https://fwens-backend.onrender.com/completions', options)
+        // const response = await fetch('https://fwens-backend.onrender.com/completions', options)
+        const response = await fetch('http://localhost:8000/completions', options)
+
         const data = await response.json()
+
 
         // >> save computer message to array
         let newComputerMessage = {
@@ -228,12 +234,19 @@ function App() {
     // >> wait for API 
     try {
       const response = await fetch('https://fwens-backend.onrender.com/eleven-completions', options);
-  
+      // const response = await fetch('http  ://localhost:8000/eleven-completions', options);
+      
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       const responseData = await response.json();
+
+      if (!responseData.base64Data) {
+      console.warn("⚠️ No base64Data found in response!");
+      return;
+    }
       const audio = new Audio();
       audio.src = 'data:audio/mpeg;base64,' + responseData.base64Data; // Set the audio source with Base64 data
       audio.play();

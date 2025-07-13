@@ -1,10 +1,15 @@
+
+
 // const PORT = 8000
+
 const port = process.env.PORT || 8000
 const express = require('express')
 const cors = require('cors')
 const fetch = require('node-fetch');
-
 require('dotenv').config();
+
+const OpenAI = require("openai");
+const { ElevenLabsClient } = require("@elevenlabs/elevenlabs-js");
 
 // setup server
 const app = express()
@@ -13,71 +18,78 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
-const GPT_API_KEY = process.env.REACT_APP_GPT_API_KEY
-const EL_API_KEY = process.env.REACT_APP_EL_API_KEY
 
-// GPT POST request handler
-app.post('/completions', async(req, res) => {
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
 
-    // Options - to create completions
-    const options = {
-        method: "POST", 
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${GPT_API_KEY}`
-        },
-        body: JSON.stringify({
-            model : "gpt-3.5-turbo",
-            messages: [{ role: "user", content: req.body.message}],
-            max_tokens: 50,
-            temperature: 0.7
-        })
-    }
+const clientEl = new ElevenLabsClient({
+  apiKey: process.env.REACT_APP_EL_API_KEY
+});
 
-    // fetching API 
-    try {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', options)
-        const data = await response.json()
-        res.send(data)
-    }   catch (error) {
-        console.error(error)
-    }
-})
+app.post('/completions', async (req, res) => {
+  const userMessage = req.body.message;
+
+  try {
+    const completion = await client.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        { role: "user", content: userMessage }
+      ],
+      max_tokens: 100,
+      temperature: 0.7
+    });
+
+    res.json({
+        choices: [
+            {
+            message: {
+                role: completion.choices[0].message.role,
+                content: completion.choices[0].message.content
+            }
+            }
+        ]
+        });
+
+  } catch (error) {
+    console.error("❌ API error:", error);
+    res.status(500).json({ error: error.message || "Something went wrong" });
+  }
+});
+
 
 app.post('/eleven-completions', async (req, res) => {
-    // Options for the other API request
-    const options = {
-        method: 'POST',
-        headers: {
-            "Accept": "audio/mpeg",
-            "Content-Type": "application/json",
-            "xi-api-key": EL_API_KEY
-        },
-        body: JSON.stringify({
-                  text: req.body.text,
-                  model_id: "eleven_monolingual_v1",
-                  voice_settings: {
-                    stability: 0.2,
-                    similarity_boost: 0.3
-                  }
-        })
-    };
+  const { text, botVoice } = req.body;
 
-     // fetching API 
-     try {
-        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${req.body.botVoice}`, options)
-        const blob = await response.blob()
-        const buffer = await blob.arrayBuffer();
-        const base64Data = Buffer.from(buffer).toString('base64');
-        res.json({ base64Data });
+  try {
+    const stream = await clientEl.textToSpeech.convert(botVoice, {
+      text,
+      modelId: "eleven_multilingual_v2",
+      outputFormat: "mp3_44100_128",
+      voiceSettings: {
+        stability: 0.2,
+        similarityBoost: 0.3
+      }
+    });
 
-    }   
-    
-    catch (error) {
-        console.error(error)
+    // ✅ Read the Node.js stream manually
+    const chunks = [];
+    for await (const chunk of stream) {
+      chunks.push(chunk);
     }
 
+    const audioBuffer = Buffer.concat(chunks);
+    const base64Data = audioBuffer.toString("base64");
+
+    res.json({ base64Data });
+
+  } catch (error) {
+    console.error("🔥 ElevenLabs SDK error:", error);
+    res.status(500).json({ error: error.message || "TTS failed" });
+  }
 });
+
+
 
 // // run server
 // app.listen(PORT, () => console.log('Your server is running on PORT' + PORT))
